@@ -61,19 +61,57 @@ class _BankAccountsState extends State<BankAccounts> {
   Future<void> onAdd() async {
     await Widgets().showResponsiveDialog(
       context: context,
-      child: DropdownButtonFormField<String>(
-        decoration: const InputDecoration(
-          labelText: 'Select Bank',
-          border: OutlineInputBorder(),
-        ),
-        items:
-            Const().banks.keys.map((String bank) {
-              return DropdownMenuItem<String>(value: bank, child: Text(bank));
-            }).toList(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // dropdown for bank
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Select Bank',
+                border: OutlineInputBorder(),
+              ),
+              items:
+                  Const().banks.keys.map((String bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank,
+                      child: Text(bank),
+                    );
+                  }).toList(),
 
-        onChanged: (value) {},
+              onChanged: (value) {},
+            ),
+
+            // savings balance
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Savings Balance'),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {},
+            ),
+
+            // FD balance
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Fixed Deposit Balance',
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {},
+            ),
+
+            // nick name
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Nickname (optional)',
+              ),
+              onChanged: (value) {},
+            ),
+          ],
+        ),
       ),
-      actions: [],
+      actions: [ElevatedButton(onPressed: () {}, child: Text("Add"))],
     );
   }
 
