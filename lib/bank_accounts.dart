@@ -100,7 +100,7 @@ class _BankAccountsState extends State<BankAccounts> {
               onChanged: (value) {},
             ),
 
-            // nick name
+            // nickname
             SizedBox(height: 10),
             TextField(
               decoration: const InputDecoration(
