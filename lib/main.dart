@@ -35,6 +35,6 @@ class MainApp extends StatelessWidget {
     Widget home = Home(title: 'Networth Tracker');
     Widget test = BankAccounts(title: "Testing");
 
-    return MaterialApp(home: test, theme: theme);
+    return MaterialApp(home: home, theme: theme);
   }
 }

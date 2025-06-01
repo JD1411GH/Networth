@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:networth/bank_accounts.dart';
+import 'package:networth/common/datatypes.dart';
+import 'package:networth/common/fb.dart';
+import 'package:networth/common/utils.dart';
 import 'package:networth/mf_accounts.dart';
 import 'package:networth/widgets/maintile.dart';
 import 'package:synchronized/synchronized.dart';
@@ -20,6 +23,7 @@ class _AccountsState extends State<Accounts> {
   // scalars
   final Lock _lock = Lock();
   bool _isLoading = true;
+  int _bankAccountsSum = 0;
 
   // lists
 
@@ -50,6 +54,17 @@ class _AccountsState extends State<Accounts> {
 
     await _lock.synchronized(() async {
       // your code here
+      _bankAccountsSum = 0;
+      List<BankAccount> bankAccounts = [];
+      List bankAccountsRaw = await FB().getList(path: "BankAccounts");
+      bankAccounts =
+          bankAccountsRaw
+              .map((e) => Utils().convertRawToDatatype(e, BankAccount.fromJson))
+              .toList();
+      for (var account in bankAccounts) {
+        _bankAccountsSum += account.savingsBalance ?? 0;
+        _bankAccountsSum += account.fdBalance ?? 0;
+      }
     });
 
     // refresh all child widgets
@@ -92,7 +107,7 @@ class _AccountsState extends State<Accounts> {
                           // Bank accounts
                           MainTile(
                             title: "Bank Accounts",
-                            subtitle: "₹ 1,00,00",
+                            subtitle: "₹ $_bankAccountsSum",
                             onTap:
                                 () => Navigator.push(
                                   context,
@@ -107,7 +122,7 @@ class _AccountsState extends State<Accounts> {
 
                           MainTile(
                             title: "Mutual Funds",
-                            subtitle: "₹ 1,00,00",
+                            subtitle: "₹ 0",
                             onTap:
                                 () => Navigator.push(
                                   context,
