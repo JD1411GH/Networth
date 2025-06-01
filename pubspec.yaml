@@ -27,3 +27,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/banks/airtel.png
+    - assets/images/banks/axis.png
+    - assets/images/banks/fi.png
+    - assets/images/banks/hdfc.png
+    - assets/images/banks/icici.png
+    - assets/images/banks/kotak.png
+    - assets/images/banks/pnb.png
+    - assets/images/banks/sbi.png

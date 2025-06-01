@@ -3,6 +3,8 @@ class Const {
   static final double maxCardWidth = 400;
   static final double maxScreenHeight = 1000;
 
+  static final String currencySymbol = "₹";
+
   factory Const() {
     return _instance;
   }
