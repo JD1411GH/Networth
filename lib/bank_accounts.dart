@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:networth/common/const.dart';
+import 'package:networth/common/datatypes.dart';
+import 'package:networth/common/fb.dart';
 import 'package:networth/widgets/widgets.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -59,6 +61,11 @@ class _BankAccountsState extends State<BankAccounts> {
   }
 
   Future<void> onAdd() async {
+    String bankName = "";
+    String nickname = "";
+    int savingsBalance = 0;
+    int fdBalance = 0;
+
     await Widgets().showResponsiveDialog(
       context: context,
       child: Padding(
@@ -79,7 +86,9 @@ class _BankAccountsState extends State<BankAccounts> {
                     );
                   }).toList(),
 
-              onChanged: (value) {},
+              onChanged: (value) {
+                bankName = value ?? "";
+              },
             ),
 
             // savings balance
@@ -87,7 +96,9 @@ class _BankAccountsState extends State<BankAccounts> {
             TextField(
               decoration: const InputDecoration(labelText: 'Savings Balance'),
               keyboardType: TextInputType.number,
-              onChanged: (value) {},
+              onChanged: (value) {
+                savingsBalance = int.tryParse(value) ?? 0;
+              },
             ),
 
             // FD balance
@@ -97,7 +108,9 @@ class _BankAccountsState extends State<BankAccounts> {
                 labelText: 'Fixed Deposit Balance',
               ),
               keyboardType: TextInputType.number,
-              onChanged: (value) {},
+              onChanged: (value) {
+                fdBalance = int.tryParse(value) ?? 0;
+              },
             ),
 
             // nickname
@@ -106,12 +119,30 @@ class _BankAccountsState extends State<BankAccounts> {
               decoration: const InputDecoration(
                 labelText: 'Nickname (optional)',
               ),
-              onChanged: (value) {},
+              onChanged: (value) {
+                nickname = value;
+              },
             ),
           ],
         ),
       ),
-      actions: [ElevatedButton(onPressed: () {}, child: Text("Add"))],
+      actions: [
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.of(context).pop();
+
+            BankAccount data = BankAccount(
+              bankName: bankName,
+              nickname: nickname.isEmpty ? null : nickname,
+              savingsBalance: savingsBalance,
+              fdBalance: fdBalance,
+            );
+            // await FB().addToList(listpath: "BankAccounts", data: data);
+            await FB().setValue(path: "somepath", value: "value");
+          },
+          child: Text("Add"),
+        ),
+      ],
     );
   }
 
