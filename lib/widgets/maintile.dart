@@ -20,11 +20,17 @@ class MainTile extends StatefulWidget {
 
 class MainTileState extends State<MainTile> {
   final Lock _lock = Lock();
+  String _animatedSubtitle = '';
 
   @override
   void initState() {
     super.initState();
-
+    // Trigger the subtitle animation after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _animatedSubtitle = widget.subtitle;
+      });
+    });
     refresh();
   }
 
@@ -60,6 +66,9 @@ class MainTileState extends State<MainTile> {
         constraints: BoxConstraints(maxWidth: maxWidth, minWidth: maxWidth),
         child: Card(
           color: Utils().getRandomDarkColor(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32), // Increased roundness
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -81,11 +90,18 @@ class MainTileState extends State<MainTile> {
                 // subtitle
                 Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    widget.subtitle,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(_animatedSubtitle.length, (i) {
+                      return _AnimatedChar(
+                        char: _animatedSubtitle[i],
+                        delay: Duration(milliseconds: 50 * i),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                      );
+                    }),
                   ),
                 ),
               ],
@@ -93,6 +109,58 @@ class MainTileState extends State<MainTile> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AnimatedChar extends StatefulWidget {
+  final String char;
+  final Duration delay;
+  final TextStyle style;
+
+  const _AnimatedChar({
+    required this.char,
+    required this.delay,
+    required this.style,
+  });
+
+  @override
+  State<_AnimatedChar> createState() => _AnimatedCharState();
+}
+
+class _AnimatedCharState extends State<_AnimatedChar> {
+  bool _animate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(widget.delay, () {
+      if (mounted) {
+        setState(() {
+          _animate = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 1, end: _animate ? 0 : 1),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+      builder: (context, value, child) {
+        final double angle = value * 1.2; // vertical flip
+        return Transform(
+          alignment: Alignment.center,
+          transform:
+              Matrix4.identity()
+                ..setEntry(3, 2, 0.002)
+                ..rotateX(angle),
+          child: Opacity(opacity: (1 - value).clamp(0.0, 1.0), child: child),
+        );
+      },
+      child: Text(widget.char, style: widget.style),
     );
   }
 }

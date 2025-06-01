@@ -64,24 +64,13 @@ class _HomeState extends State<Home> {
           appBar: AppBar(title: Text(widget.title)),
           body: RefreshIndicator(
             onRefresh: refresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Column(
-                    children: [
-                      // leave some space at top
-                      SizedBox(height: 10),
-
-                      // your widgets here
-                      MainTile(title: "Networth", subtitle: "1,00,00"),
-
-                      // leave some space at bottom
-                      SizedBox(height: 100),
-                    ],
-                  ),
-                ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 200),
+                  MainTile(title: "Networth", subtitle: "1,00,00"),
+                ],
               ),
             ),
           ),
