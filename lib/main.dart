@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:networth/accounts.dart';
+import 'package:networth/bank_accounts.dart';
 import 'package:networth/common/theme.dart';
 import 'package:networth/home.dart';
 
@@ -14,6 +16,9 @@ class MainApp extends StatelessWidget {
     ThemeCreator themeCreator = ThemeCreator(primaryColor: Colors.green);
     ThemeData theme = themeCreator.create();
 
-    return MaterialApp(home: Home(title: 'Net Worth Tracker'), theme: theme);
+    Widget home = Home(title: 'Networth Tracker');
+    Widget test = BankAccounts(title: "Testing");
+
+    return MaterialApp(home: test, theme: theme);
   }
 }

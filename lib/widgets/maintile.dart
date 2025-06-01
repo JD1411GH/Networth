@@ -7,8 +7,14 @@ import 'package:synchronized/synchronized.dart';
 class MainTile extends StatefulWidget {
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
-  const MainTile({super.key, required this.title, required this.subtitle});
+  const MainTile({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+  });
 
   @override
   State<MainTile> createState() => MainTileState();
@@ -62,49 +68,57 @@ class MainTileState extends State<MainTile> {
             : maxWidth;
 
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth, minWidth: maxWidth),
-        child: Card(
-          color: Utils().getRandomDarkColor(),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32), // Increased roundness
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // title
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                  child: Center(
-                    child: Text(
-                      widget.title,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineLarge!.copyWith(color: Colors.white),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 32, right: 32),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth, minWidth: maxWidth),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(32),
+            onTap: widget.onTap,
+            child: Card(
+              color: Utils().getRandomDarkColor(),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32), // Increased roundness
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    // title
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 4.0,
+                        horizontal: 8.0,
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.title,
+                          style: Theme.of(context).textTheme.headlineLarge!
+                              .copyWith(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
 
-                // subtitle
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(_animatedSubtitle.length, (i) {
-                      return _AnimatedChar(
-                        char: _animatedSubtitle[i],
-                        delay: Duration(milliseconds: 50 * i),
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge!.copyWith(color: Colors.white),
-                      );
-                    }),
-                  ),
+                    // subtitle
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(_animatedSubtitle.length, (i) {
+                          return _AnimatedChar(
+                            char: _animatedSubtitle[i],
+                            delay: Duration(milliseconds: 50 * i),
+                            style: Theme.of(context).textTheme.bodyLarge!
+                                .copyWith(color: Colors.white),
+                          );
+                        }),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

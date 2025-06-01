@@ -1,20 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:networth/accounts.dart';
-import 'package:networth/widgets/maintile.dart';
 import 'package:synchronized/synchronized.dart';
 
-class Home extends StatefulWidget {
+class MFAccounts extends StatefulWidget {
   final String title;
+  final String? splashImage;
 
-  const Home({super.key, required this.title});
+  const MFAccounts({super.key, required this.title, this.splashImage});
 
   @override
   // ignore: library_private_types_in_public_api
-  _HomeState createState() => _HomeState();
+  _MFAccountsState createState() => _MFAccountsState();
 }
 
-class _HomeState extends State<Home> {
+class _MFAccountsState extends State<MFAccounts> {
   // scalars
   final Lock _lock = Lock();
   bool _isLoading = true;
@@ -65,24 +64,23 @@ class _HomeState extends State<Home> {
           appBar: AppBar(title: Text(widget.title)),
           body: RefreshIndicator(
             onRefresh: refresh,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  SizedBox(height: 200),
-                  MainTile(
-                    title: "Total Networth",
-                    subtitle: "₹ 1,00,00",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Accounts(title: "Accounts"),
-                        ),
-                      );
-                    },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Column(
+                    children: [
+                      // leave some space at top
+                      SizedBox(height: 10),
+
+                      // your widgets here
+
+                      // leave some space at bottom
+                      SizedBox(height: 100),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
