@@ -134,78 +134,79 @@ class _BankAccountsState extends State<BankAccounts> {
   }
 
   Future<void> _onAdd({BankAccount? oldAccount}) async {
-    String bankName = "";
-    String nickname = "";
-    int savingsBalance = 0;
-    int fdBalance = 0;
+    String? bankName;
+    TextEditingController nicknameController = TextEditingController();
+    TextEditingController savingsBalanceController = TextEditingController();
+    TextEditingController fdBalanceController = TextEditingController();
+
+    if (oldAccount != null) {
+      bankName = oldAccount.bankName;
+      nicknameController.text = oldAccount.nickname ?? "";
+      savingsBalanceController.text =
+          (oldAccount.savingsBalance ?? 0).toString();
+      fdBalanceController.text = (oldAccount.fdBalance ?? 0).toString();
+    }
+
     final formKey = GlobalKey<FormState>();
 
     await Widgets().showResponsiveDialog(
       context: context,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              // dropdown for bank
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select Bank',
-                  border: OutlineInputBorder(),
-                ),
-                items:
-                    Const().banks.keys.map((String bank) {
-                      return DropdownMenuItem<String>(
-                        value: bank,
-                        child: Text(bank),
-                      );
-                    }).toList(),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a bank';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  bankName = value ?? "";
-                },
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            // dropdown for bank
+            DropdownButtonFormField<String>(
+              value: bankName,
+              decoration: const InputDecoration(
+                labelText: 'Select Bank',
+                border: OutlineInputBorder(),
               ),
+              items:
+                  Const().banks.keys.map((String bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank,
+                      child: Text(bank),
+                    );
+                  }).toList(),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a bank';
+                }
+                return null;
+              },
+              onChanged: (value) {
+                bankName = value ?? "";
+              },
+            ),
 
-              // savings balance
-              SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Savings Balance'),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  savingsBalance = int.tryParse(value) ?? 0;
-                },
-              ),
+            // savings balance
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Savings Balance'),
+              keyboardType: TextInputType.number,
+              controller: savingsBalanceController,
+            ),
 
-              // FD balance
-              SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Fixed Deposit Balance',
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  fdBalance = int.tryParse(value) ?? 0;
-                },
+            // FD balance
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Fixed Deposit Balance',
               ),
+              keyboardType: TextInputType.number,
+              controller: fdBalanceController,
+            ),
 
-              // nickname
-              SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Nickname (optional)',
-                ),
-                onChanged: (value) {
-                  nickname = value;
-                },
+            // nickname
+            SizedBox(height: 10),
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Nickname (optional)',
               ),
-            ],
-          ),
+              controller: nicknameController,
+            ),
+          ],
         ),
       ),
       actions: [
@@ -214,22 +215,68 @@ class _BankAccountsState extends State<BankAccounts> {
             if (formKey.currentState!.validate()) {
               Navigator.of(context).pop();
               BankAccount data = BankAccount(
-                bankName: bankName,
-                nickname: nickname.isEmpty ? null : nickname,
-                savingsBalance: savingsBalance,
-                fdBalance: fdBalance,
-              );
-              await FB().addToList(
-                listpath: "BankAccounts",
-                data: data.toJson(),
+                bankName: bankName!,
+                nickname:
+                    nicknameController.text.isEmpty
+                        ? null
+                        : nicknameController.text,
+                savingsBalance:
+                    savingsBalanceController.text.isEmpty
+                        ? null
+                        : int.tryParse(savingsBalanceController.text),
+                fdBalance:
+                    fdBalanceController.text.isEmpty
+                        ? null
+                        : int.tryParse(fdBalanceController.text),
               );
 
+              if (oldAccount == null) {
+                await FB().addToList(
+                  listpath: "BankAccounts",
+                  data: data.toJson(),
+                );
+              } else {
+                List accountsRaw = await FB().getList(path: "BankAccounts");
+                List<BankAccount> accounts =
+                    accountsRaw
+                        .map(
+                          (e) => Utils().convertRawToDatatype(
+                            e,
+                            BankAccount.fromJson,
+                          ),
+                        )
+                        .toList();
+                int idx = accounts.indexWhere(
+                  (a) =>
+                      a.bankName == oldAccount.bankName &&
+                      a.nickname == oldAccount.nickname,
+                );
+                if (idx != -1) {
+                  accounts[idx] = data;
+                  await FB().setValue(
+                    path: "BankAccounts",
+                    value: accounts.map((e) => e.toJson()).toList(),
+                  );
+                }
+              }
+
               setState(() {
-                _bankAccounts.add(data);
+                if (oldAccount == null) {
+                  _bankAccounts.add(data);
+                } else {
+                  int idx = _bankAccounts.indexWhere(
+                    (a) =>
+                        a.bankName == oldAccount.bankName &&
+                        a.nickname == oldAccount.nickname,
+                  );
+                  if (idx != -1) {
+                    _bankAccounts[idx] = data;
+                  }
+                }
               });
             }
           },
-          child: Text("Add"),
+          child: Text(oldAccount == null ? "Add" : "Update"),
         ),
       ],
     );
