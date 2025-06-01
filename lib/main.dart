@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:networth/common/theme.dart';
+import 'package:networth/home.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,12 +11,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
+    ThemeCreator themeCreator = ThemeCreator(primaryColor: Colors.green);
+    ThemeData theme = themeCreator.create();
+
+    return MaterialApp(home: Home(title: 'Net Worth Tracker'), theme: theme);
   }
 }

@@ -1,3 +1,3 @@
-# flutter_application_1
+# networth
 
 A new Flutter project.

@@ -1,4 +1,4 @@
-name: flutter_application_1
+name: networth
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -7,10 +7,17 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  crypto: ^3.0.6
   firebase_auth: ^5.5.4
+  firebase_database: ^11.3.6
   flutter:
     sdk: flutter
+  fluttertoast: ^8.2.12
+  google_fonts: ^6.2.1
+  intl: ^0.20.2
+  shared_preferences: ^2.5.3
   synchronized: ^3.3.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
